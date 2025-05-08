@@ -81,6 +81,9 @@ dd if=/dev/zero of=infile bs=1M count=50
 pipex_test 0 "" "infile" "ls" "wc -l" "outfile"
 echo "" > infile
 
+# 先頭のプロセスの出力が長い
+pipex_test 0 "" infile yes "head -n 10" outfile
+
 # bonus ---------------------------------
 pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "wc -l" "outfile"
 pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "grep a" "grep xxx" "wc -l" "outfile"
