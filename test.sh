@@ -29,6 +29,10 @@ pipex_test() {
 
 make re
 # make bonus
+if [ $? -ne 0 ]; then
+  exit 1
+fi
+
 
 if [ ! -e "outfile_permission" ]; then
   touch outfile_permission
@@ -37,6 +41,9 @@ fi
 if [ ! -e "infile_permission" ]; then
   touch infile_permission
   chmod 000 infile_permission
+fi
+if [ $? -ne 0 ]; then
+  exit 1
 fi
 
 # 1~5
