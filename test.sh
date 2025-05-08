@@ -87,3 +87,5 @@ pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "grep a" "grep xxx" "wc -l" "out
 
 # echo 28
 # pipex_test 0 "" here_doc EOF "grep error" sort outfile
+
+rm -f ' '
