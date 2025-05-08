@@ -36,11 +36,11 @@ fi
 
 if [ ! -e "outfile_permission" ]; then
   touch outfile_permission
-  chmod 000 outfile_permission
+  chmod -rw outfile_permission
 fi
 if [ ! -e "infile_permission" ]; then
   touch infile_permission
-  chmod 000 infile_permission
+  chmod -rw infile_permission
 fi
 if [ $? -ne 0 ]; then
   exit 1
@@ -98,4 +98,4 @@ pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "grep a" "grep xxx" "wc -l" "out
 # echo 28
 # pipex_test 0 "" here_doc EOF "grep error" sort outfile
 
-rm -f ' '
+rm -f ' ' outfile_permission infile_permission
