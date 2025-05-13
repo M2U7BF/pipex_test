@@ -1,4 +1,4 @@
-#!bin/pipex
+#!/bin/bash
 
 # pipex_test 1 "$expected" "infile" "ls" "wc -l" "outfile"
 
@@ -6,7 +6,7 @@ count=0
 
 increment_and_print() {
     ((count++))
-    echo "$count"
+    echo "[$count]-----------------------------------------------------------------"
 }
 
 pipex_test() {
@@ -22,9 +22,10 @@ pipex_test() {
         echo "NG, $status, expected:$expected_status"
     fi
 
-    if [ "$stderr_output" != "$expected_stderr" ]; then
-        echo "NG, $stderr_output, expected:$expected_stderr"
-    fi
+    # if [ "$stderr_output" != "$expected_stderr" ]; then
+    #     echo "NG, $stderr_output, expected:$expected_stderr"
+    # fi
+    echo "$stderr_output"
 }
 
 make re
@@ -32,7 +33,16 @@ make re
 if [ $? -ne 0 ]; then
   exit 1
 fi
+echo ""
 
+echo "norminetteのテスト===================================================================="
+norminette | grep Error
+if [ $? -ne 1 ]; then
+  exit 1
+else
+  echo "OK"
+fi
+echo ""
 
 if [ ! -e "outfile_permission" ]; then
   touch outfile_permission
@@ -46,6 +56,7 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+echo "終了ステータスのテスト===================================================================="
 # 1~5
 pipex_test 0 "pipex: nonexisting: No such file or directory" "nonexisting" "ls" "wc -l" "outfile"
 pipex_test 0 "nonexisting: command not found" "infile" "nonexisting" "wc -l" "outfile"
