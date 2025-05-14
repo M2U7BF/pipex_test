@@ -27,7 +27,9 @@ pipex_test() {
     # if [ "$stderr_output" != "$expected_stderr" ]; then
     #     echo "NG, $stderr_output, expected:$expected_stderr"
     # fi
-    echo "$stderr_output"
+    # echo "$stderr_output"
+
+    valgrind --leak-check=full --show-leak-kinds=all -q ./pipex "$@"
 }
 
 test_mandatory() {
