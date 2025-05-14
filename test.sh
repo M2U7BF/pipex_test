@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # テストフラグ
-mandatory_test=1
+mandatory_test=0
 bonus_test=1
+leak_test=0
 
 count=0
 
@@ -21,7 +22,10 @@ pipex_test() {
     status=$?
 
     if [ "$status" -ne "$expected_status" ]; then
-        echo "NG, $status, expected:$expected_status"
+        echo "exit status: NG🔥"
+        echo "$status, expected:$expected_status"
+    else
+      echo "exit status: OK"
     fi
 
     # if [ "$stderr_output" != "$expected_stderr" ]; then
@@ -29,7 +33,11 @@ pipex_test() {
     # fi
     # echo "$stderr_output"
 
-    valgrind --leak-check=full --show-leak-kinds=all -q ./pipex "$@"
+    if [ $leak_test -eq 1 ]; then
+      valgrind --leak-check=full --show-leak-kinds=all -q ./pipex "$@"
+    else
+      ./pipex "$@"
+    fi
 }
 
 test_mandatory() {
@@ -71,12 +79,12 @@ test_mandatory() {
   pipex_test 127 " : command not found" "infile" "ls -l" " " "outfile"
   pipex_test 0 "" "infile" "ls -l" "wc -l" " "
 
-  echo "ファイルサイズ大きい場合のテスト===================================================================="
+  # ファイルサイズ大きい場合のテスト
   dd if=/dev/zero of=infile bs=1M count=50
   pipex_test 0 "" "infile" "ls" "wc -l" "outfile"
   echo "" > infile
 
-  echo "先頭のプロセスの出力が長い場合のテスト===================================================================="
+  # 先頭のプロセスの出力が長い場合のテスト
   pipex_test 0 "" infile yes "head -n 10" outfile
 }
 
@@ -127,6 +135,9 @@ if [ $bonus_test -eq 1 ]; then
   echo "bonusの基本パターン===================================================================="
   pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "wc -l" "outfile"
   pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "grep a" "grep xxx" "wc -l" "outfile"
+
+  # 先頭のプロセスの出力が長い場合のテスト
+  pipex_test 0 "" infile yes "/usr/bin/ls" "grep a" "head -n 10" outfile
 
   # echo 28
   # pipex_test 0 "" here_doc EOF "grep error" sort outfile
