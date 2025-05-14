@@ -135,12 +135,15 @@ if [ $bonus_test -eq 1 ]; then
   echo "bonusの基本パターン===================================================================="
   pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "wc -l" "outfile"
   pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "grep a" "grep xxx" "wc -l" "outfile"
+  pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "grep a" "grep a" "grep a" "grep a" "grep a" "grep a" "grep xxx" "wc -l" "outfile"
 
   # 先頭のプロセスの出力が長い場合のテスト
   pipex_test 0 "" infile yes "/usr/bin/ls" "grep a" "head -n 10" outfile
 
-  # echo 28
-  # pipex_test 0 "" here_doc EOF "grep error" sort outfile
+  # ヒアドキュメントのテスト
+  # 実行例）
+  # ./pipex here_doc EOF "grep error" sort outfile
+  pipex_test 0 "" here_doc EOF "grep error" sort outfile
 fi
 
 rm -f ' ' outfile_permission infile_permission
