@@ -3,7 +3,7 @@
 # テストフラグ
 mandatory_test=0
 bonus_test=1
-leak_test=0
+leak_test=1
 
 count=0
 
@@ -133,17 +133,35 @@ if [ $bonus_test -eq 1 ]; then
   echo ""
 
   echo "bonusの基本パターン===================================================================="
-  pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "wc -l" "outfile"
-  pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "grep a" "grep xxx" "wc -l" "outfile"
-  pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "grep a" "grep a" "grep a" "grep a" "grep a" "grep a" "grep xxx" "wc -l" "outfile"
+  BONUS_OUTFILE_1="bonus_outfile"
+  pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "wc -l" $BONUS_OUTFILE_1
+  pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "grep a" "grep xxx" "wc -l" $BONUS_OUTFILE_1
+  pipex_test 0 "" "infile" "/usr/bin/ls" "grep a" "grep a" "grep a" "grep a" "grep a" "grep a" "grep a" "grep xxx" "wc -l" $BONUS_OUTFILE_1
 
   # 先頭のプロセスの出力が長い場合のテスト
-  pipex_test 0 "" infile yes "/usr/bin/ls" "grep a" "head -n 10" outfile
+  pipex_test 0 "" infile yes "/usr/bin/ls" "grep a" "head -n 10" $BONUS_OUTFILE_1
 
+  BONUS_OUTFILE_2="bonus_outfile_heredoc"
   # ヒアドキュメントのテスト
   # 実行例）
   # ./pipex here_doc EOF "grep error" sort outfile
-  pipex_test 0 "" here_doc EOF "grep error" sort outfile
+  pipex_test 0 "" here_doc EOF "grep hello" sort $BONUS_OUTFILE_2 <<EOF
+hello world
+hello hello
+EOF
+
+  pipex_test 0 "" here_doc EOF "grep a" sort $BONUS_OUTFILE_2 <<EOF
+EOF
+
+  pipex_test 0 "" here_doc EOF "grep EOF" sort $BONUS_OUTFILE_2 <<EOF
+EEOF
+EOFF
+EOF
+
+  pipex_test 0 "" here_doc EOF "grep a" sort $BONUS_OUTFILE_2 <<a
+aaa
+a
+
 fi
 
 rm -f ' ' outfile_permission infile_permission
