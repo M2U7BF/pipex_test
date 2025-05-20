@@ -88,7 +88,8 @@ test_mandatory() {
   pipex_test 0 "" infile yes "head -n 10" outfile
 }
 
-make re
+make fclean
+make debug
 if [ $? -ne 0 ]; then
   exit 1
 fi
@@ -123,7 +124,8 @@ fi
 
 if [ $bonus_test -eq 1 ]; then
   echo "bonusのテスト========================================================================================================================================="
-  make bonus
+  make fclean
+  make debug_bonus
   if [ $? -ne 0 ]; then
     exit 1
   fi
