@@ -89,7 +89,12 @@ test_mandatory() {
 }
 
 make fclean
-make debug
+make -n debug
+if [ $? -eq 0 ]; then
+  make debug
+else
+  make
+fi
 if [ $? -ne 0 ]; then
   exit 1
 fi
@@ -125,7 +130,12 @@ fi
 if [ $bonus_test -eq 1 ]; then
   echo "bonusのテスト========================================================================================================================================="
   make fclean
-  make debug_bonus
+  make -n debug_bonus
+  if [ $? -eq 0 ]; then
+    make debug_bonus
+  else
+    make bonus
+  fi
   if [ $? -ne 0 ]; then
     exit 1
   fi
