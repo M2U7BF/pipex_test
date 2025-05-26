@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # テストフラグ
-mandatory_test=0
+mandatory_test=1
 bonus_test=1
 leak_test=1
 
