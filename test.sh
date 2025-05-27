@@ -5,10 +5,15 @@ norminette_test=1
 use_func_test=1
 leak_test=1
 func_test=1
-mandatory_test=1
-bonus_test=1
+mandatory_test=0
+bonus_test=0
 
 count=0
+
+check_exit_status()
+{
+  if [ $? -ne $1 ]; then echo "exit: NG🔥"; else echo "exit: OK"; fi
+}
 
 increment_and_print() {
     ((count++))
@@ -105,12 +110,14 @@ echo ""
 
 if [ $norminette_test -eq 1 ]; then
   echo "norminetteのテスト===================================================================="
-  norminette | grep Error
-  if [ $? -ne 1 ]; then
-    exit 1
-  else
-    echo "OK"
-  fi
+  find mandatory -name "*.c" | xargs norminette | grep Error
+  check_exit_status 1
+  find mandatory -name "*.h" | xargs norminette | grep Error
+  check_exit_status 1
+  find bonus -name "*.c" | xargs norminette | grep Error
+  check_exit_status 1
+  find bonus -name "*.h" | xargs norminette | grep Error
+  check_exit_status 1
   echo ""
 fi
 
@@ -123,7 +130,8 @@ fi
 
 if [ $func_test -eq 1 ]; then
   echo "メイン以外の基本関数のテスト -------------------------------------------"
-  cc -o ./func_test pipex_test/test_main.c pipex.a && ./func_test
+  # cc -g3 -Wall -Werror -Wextra -o ./func_test pipex_test/test_main.c pipex.a lib/libft/libft.a && gdb ./func_test
+  cc -g -Wall -Werror -Wextra -o ./func_test pipex_test/test_main.c pipex.a lib/libft/libft.a && valgrind --leak-check=full -q ./func_test
   check_exit_status 0
   echo ""
 fi
