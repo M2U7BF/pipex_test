@@ -5,6 +5,7 @@ mandatory_test=1
 bonus_test=1
 leak_test=1
 norminette_test=1
+use_func_test=1
 
 count=0
 
@@ -112,6 +113,14 @@ if [ $norminette_test -eq 1 ]; then
   echo ""
 fi
 
+if [ $use_func_test -eq 1 ]; then
+  echo "使用関数のチェック -------------------------------------------"
+  nm -u ./pipex | grep GLIBC | grep -v -E '__libc_start_main|__stack_chk_fail|open|close|read|write|malloc|free|perror|strerror|access|dup|dup2|execve|exit|fork|pipe|unlink|wait|waitpid'
+  check_exit_status 1
+  echo ""
+fi
+
+# テスト用ファイル作成
 if [ ! -e "outfile_permission" ]; then
   touch outfile_permission
   chmod -rw outfile_permission
