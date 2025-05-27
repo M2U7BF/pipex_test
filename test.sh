@@ -4,6 +4,7 @@
 mandatory_test=1
 bonus_test=1
 leak_test=1
+norminette_test=1
 
 count=0
 
@@ -100,14 +101,16 @@ if [ $? -ne 0 ]; then
 fi
 echo ""
 
-echo "norminetteのテスト===================================================================="
-norminette | grep Error
-if [ $? -ne 1 ]; then
-  exit 1
-else
-  echo "OK"
+if [ $norminette_test -eq 1 ]; then
+  echo "norminetteのテスト===================================================================="
+  norminette | grep Error
+  if [ $? -ne 1 ]; then
+    exit 1
+  else
+    echo "OK"
+  fi
+  echo ""
 fi
-echo ""
 
 if [ ! -e "outfile_permission" ]; then
   touch outfile_permission
