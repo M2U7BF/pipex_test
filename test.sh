@@ -1,11 +1,12 @@
 #!/bin/bash
 
 # テストフラグ
-mandatory_test=1
-bonus_test=1
-leak_test=1
 norminette_test=1
 use_func_test=1
+leak_test=1
+func_test=1
+mandatory_test=1
+bonus_test=1
 
 count=0
 
@@ -117,6 +118,13 @@ if [ $use_func_test -eq 1 ]; then
   echo "使用関数のチェック -------------------------------------------"
   nm -u ./pipex | grep GLIBC | grep -v -E '__libc_start_main|__stack_chk_fail|open|close|read|write|malloc|free|perror|strerror|access|dup|dup2|execve|exit|fork|pipe|unlink|wait|waitpid'
   check_exit_status 1
+  echo ""
+fi
+
+if [ $func_test -eq 1 ]; then
+  echo "メイン以外の基本関数のテスト -------------------------------------------"
+  cc -o ./func_test pipex_test/test_main.c pipex.a && ./func_test
+  check_exit_status 0
   echo ""
 fi
 
