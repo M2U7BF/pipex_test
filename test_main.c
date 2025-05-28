@@ -28,6 +28,11 @@ void	put_ng(void)
 	printf("NG🔥\n");
 }
 
+void	put_ok(void)
+{
+	printf("OK💎\n");
+}
+
 // コマンドパスを探して、必要に応じてもとの値を書き換える関数
 void	test_get_command_path(char *envp[])
 {
@@ -35,8 +40,8 @@ void	test_get_command_path(char *envp[])
 			ft_strdup(""), ft_strdup("/"), ft_strdup("//"), ft_strdup("//////"),
 			ft_strdup("/bin/nonexisting"), ft_strdup("nonexisting"),
 			ft_strdup("sudo")};
-	int		expected[] = {0, 0, EXIT_CMD_NOT_FOUND, 0, 0, 0, EXIT_CMD_NOT_FOUND,
-				EXIT_CMD_NOT_FOUND, EXIT_PERMISSION_DENIED};
+	int		expected[] = {0, 0, EXIT_CMD_NOT_FOUND, EISDIR, EISDIR, EISDIR, ENOENT,
+				EXIT_CMD_NOT_FOUND, EACCES};
 	int		result;
 	char	**path_env;
 	int		len;
@@ -56,7 +61,10 @@ void	test_get_command_path(char *envp[])
 			printf("\n");
 		}
 		else
-			printf("OK\n\n");
+		{
+			put_ok();
+			printf("\n");
+		}
 		if (result == 0)
 			free(cmd_paths[i]);
 	}
@@ -129,6 +137,8 @@ void	test_open(void)
 			perror("open");
 		printf("\n");
 	}
+	unlink(" ");
+	unlink("nonexisting");
 	printf("\n");
 }
 
@@ -137,7 +147,7 @@ void	test_open_infile(void)
 	char	*filenames[] = {"", "/", "//", "//////////////////////////////",
 			" ", "nonexisting", "infile_permission"};
 	int		fds[] = {0, 0, 0, 0, 0, 0, 0};
-	int		expected[] = {1, 0, 0, 0, 1, 1, 1};
+	int		expected[] = {ENOENT, 0, 0, 0, ENOENT, ENOENT, EACCES};
 	int		len;
 	int		result;
 
@@ -145,7 +155,7 @@ void	test_open_infile(void)
 	len = sizeof(filenames) / sizeof(filenames[0]);
 	for (int i = 0; i < len; i++)
 	{
-		printf("TEST %d: file_name=%s, fd=（略）\n", i, filenames[i]);
+		printf("TEST %d: file_name=\"%s\", fd=（略）\n", i, filenames[i]);
 		result = open_infile(filenames[i], &fds[i]);
 		if (result != expected[i])
 		{
@@ -155,7 +165,10 @@ void	test_open_infile(void)
 			printf("\n");
 		}
 		else
-			printf("OK\n\n");
+		{
+			put_ok();
+			printf("\n");
+		}
 		if (result != 1)
 			close(fds[i]);
 	}
@@ -166,7 +179,7 @@ void	test_open_outfile(void)
 	char	*filenames[] = {"", "/", "//", "//////////////////////////////",
 			" ", "nonexisting", "infile_permission"};
 	int		fds[] = {0, 0, 0, 0, 0, 0, 0};
-	int		expected[] = {1, 1, 1, 1, 0, 0, 1};
+	int		expected[] = {ENOENT, EISDIR, EISDIR, EISDIR, 0, 0, EACCES};
 	int		len;
 	int		result;
 
@@ -184,7 +197,10 @@ void	test_open_outfile(void)
 			printf("\n");
 		}
 		else
-			printf("OK\n\n");
+		{
+			put_ok();
+			printf("\n");
+		}
 		if (result != 1)
 			close(fds[i]);
 	}
@@ -215,7 +231,10 @@ void	test_process(char *envp[])
 			printf("\n");
 		}
 		else
-			printf("OK\n\n");
+    {
+      put_ok();
+      printf("\n");
+    }
 	}
 }
 

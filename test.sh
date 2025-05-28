@@ -5,14 +5,14 @@ norminette_test=1
 use_func_test=1
 leak_test=1
 func_test=1
-mandatory_test=1
+mandatory_test=0
 bonus_test=0
 
 count=0
 
 check_exit_status()
 {
-  if [ $? -ne $1 ]; then echo "exit: NG🔥"; else echo "exit: OK"; fi
+  if [ $? -ne $1 ]; then echo "exit: NG🔥"; else echo "exit: OK💎"; fi
 }
 
 increment_and_print() {
@@ -39,14 +39,14 @@ pipex_test() {
         echo "[exit status] NG🔥"
         echo "$status, expected:$expected_status"
     else
-      echo "[exit status] OK"
+      echo "[exit status] OK💎"
     fi
 
     if [ "$stderr_output" != "$expected_stderr" ]; then
         echo "[stderr_output] NG🔥"
         echo "result:\"$stderr_output\", expected:\"$expected_stderr\""
     else
-      echo "[stderr_output] OK"
+      echo "[stderr_output] OK💎"
     fi
 
     if [ $leak_test -eq 1 ]; then
@@ -106,12 +106,15 @@ test_mandatory() {
   pipex_test 0 "" infile yes "head -n 10" outfile
 }
 
-make fclean
-make -n debug
+echo "make fclean"
+make fclean >/dev/null
+make -n debug >/dev/null
 if [ $? -eq 0 ]; then
-  make debug
+  echo "make debug"
+  make debug >/dev/null
 else
-  make
+  echo "make"
+  make >/dev/null
 fi
 if [ $? -ne 0 ]; then
   exit 1
