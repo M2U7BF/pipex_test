@@ -50,6 +50,7 @@ void	test_get_command_path(char *envp[])
 		result = get_command_path(&cmd_paths[i], path_env);
 		if (result != expected[i])
 		{
+      put_ng();
 			printf("result return_value:%d, expected: %d\n", result,
 				expected[i]);
 			printf("\n");
@@ -59,7 +60,7 @@ void	test_get_command_path(char *envp[])
 		if (result == 0)
 			free(cmd_paths[i]);
 	}
-  free_s_array(path_env);
+	free_s_array(path_env);
 	printf("\n");
 }
 
@@ -67,21 +68,115 @@ void	test_get_command_path(char *envp[])
 void	test_access(void)
 {
 	char	*in[] = {"", "/", "//", "//////////////////////////////", " ",
-			"nonexisting"};
+			"nonexisting", "infile_permission"};
 	int		len;
+	int		result;
 
 	put_test_name("access");
 	len = sizeof(in) / sizeof(in[0]);
 	for (int i = 0; i < len; i++)
 	{
-		printf("pathname=%s, mode=F_OK\n", in[i]);
-		printf("result:%d\n", access(in[i], F_OK));
+		printf("TEST %d: pathname=\"%s\", mode=F_OK\n", i, in[i]);
+		result = access(in[i], F_OK);
+		printf("result:%d\n", result);
+		if (result < 0)
+			perror("access");
 		printf("\n");
 		printf("pathname=%s, mode=R_OK\n", in[i]);
-		printf("result:%d\n", access(in[i], R_OK));
+		result = access(in[i], R_OK);
+		printf("result:%d\n", result);
+		if (result == -1)
+			perror("access");
 		printf("\n");
 	}
 	printf("\n");
+}
+
+// accessの挙動調査
+void	test_open(void)
+{
+	char	*in[] = {"", "/", "//", "//////////////////////////////", " ",
+			"nonexisting", "infile_permission"};
+	int		len;
+	int		result;
+
+	put_test_name("open");
+	len = sizeof(in) / sizeof(in[0]);
+	for (int i = 0; i < len; i++)
+	{
+		printf("TEST %d: pathname=\"%s\", flags=O_RDONLY\n", i, in[i]);
+		result = open(in[i], O_RDONLY);
+		printf("result:%d\n", result);
+		if (result == -1)
+			perror("open");
+		printf("\n");
+    printf("pathname=\"%s\", flags=(O_WRONLY | O_CREAT | O_TRUNC), mode=0664\n", in[i]);
+		result = open(in[i], O_WRONLY | O_CREAT | O_TRUNC, 0664);
+		printf("result:%d\n", result);
+		if (result == -1)
+			perror("open");
+		printf("\n");
+	}
+	printf("\n");
+}
+
+void	test_open_infile(void)
+{
+	char	*filenames[] = {"", "/", "//", "//////////////////////////////",
+			" ", "nonexisting", "infile_permission"};
+	int		fds[] = {0, 0, 0, 0, 0, 0, 0};
+	int		expected[] = {1, 0, 0, 0, 1, 1, 1};
+	int		len;
+	int		result;
+
+  put_test_name("open_infile");
+	len = sizeof(filenames) / sizeof(filenames[0]);
+	for (int i = 0; i < len; i++)
+	{
+		printf("TEST %d: file_name=%s, fd=（略）\n", i, filenames[i]);
+		result = open_infile(filenames[i], &fds[i]);
+		if (result != expected[i])
+		{
+      put_ng();
+			printf("result return_value:%d, expected: %d\n", result,
+				expected[i]);
+			printf("\n");
+		}
+		else
+			printf("OK\n\n");
+		if (result != 1)
+			close(fds[i]);
+	}
+}
+
+void	test_open_outfile(void)
+{
+	char	*filenames[] = {"", "/", "//", "//////////////////////////////",
+			" ", "nonexisting", "infile_permission"};
+	int		fds[] = {0, 0, 0, 0, 0, 0, 0};
+	int		expected[] = {1, 1, 1, 1, 0, 0, 1};
+	int		len;
+	int		result;
+
+  put_test_name("open_outfile");
+	len = sizeof(filenames) / sizeof(filenames[0]);
+	for (int i = 0; i < len; i++)
+	{
+		printf("TEST %d: file_name=\"%s\", fd=（略）\n", i, filenames[i]);
+		result = open_outfile(filenames[i], &fds[i]);
+		if (result != expected[i])
+		{
+      put_ng();
+			printf("result return_value:%d, expected: %d\n", result,
+				expected[i]);
+			printf("\n");
+		}
+		else
+			printf("OK\n\n");
+		if (result != 1)
+			close(fds[i]);
+	}
+  unlink("nonexisting");
 }
 
 int	main(int argc, char **argv, char *envp[])
@@ -89,7 +184,10 @@ int	main(int argc, char **argv, char *envp[])
 	(void)argc;
 	(void)argv;
 	(void)envp;
-	test_access();
+	// test_open();
+	test_open_infile();
+  test_open_outfile();
+	// test_access();
 	test_get_command_path(envp);
 	return (0);
 }

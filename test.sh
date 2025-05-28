@@ -5,7 +5,7 @@ norminette_test=1
 use_func_test=1
 leak_test=1
 func_test=1
-mandatory_test=0
+mandatory_test=1
 bonus_test=0
 
 count=0
@@ -128,13 +128,6 @@ if [ $use_func_test -eq 1 ]; then
   echo ""
 fi
 
-if [ $func_test -eq 1 ]; then
-  echo "メイン以外の基本関数のテスト -------------------------------------------"
-  # cc -g3 -Wall -Werror -Wextra -o ./func_test pipex_test/test_main.c pipex.a lib/libft/libft.a && gdb ./func_test
-  cc -g -Wall -Werror -Wextra -o ./func_test pipex_test/test_main.c pipex.a lib/libft/libft.a && valgrind --leak-check=full -q ./func_test
-  check_exit_status 0
-  echo ""
-fi
 
 # テスト用ファイル作成
 if [ ! -e "outfile_permission" ]; then
@@ -147,6 +140,16 @@ if [ ! -e "infile_permission" ]; then
 fi
 if [ $? -ne 0 ]; then
   exit 1
+fi
+
+if [ $func_test -eq 1 ]; then
+  echo "メイン以外の基本関数のテスト -------------------------------------------"
+  # cc -g3 -Wall -Werror -Wextra -o ./func_test pipex_test/test_main.c pipex.a lib/libft/libft.a && gdb ./func_test
+  cc -g -Wall -Werror -Wextra -o ./func_test pipex_test/test_main.c \
+    pipex.a lib/libft/libft.a lib/ft_dprintf/libftdprintf.a \
+    && valgrind --leak-check=full -q ./func_test
+  check_exit_status 0
+  echo ""
 fi
 
 if [ $mandatory_test -eq 1 ]; then
