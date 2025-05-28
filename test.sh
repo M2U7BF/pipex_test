@@ -6,7 +6,7 @@ use_func_test=1
 leak_test=1
 func_test=1
 mandatory_test=1
-bonus_test=0
+bonus_test=1
 
 count=0
 
@@ -181,12 +181,16 @@ fi
 
 if [ $bonus_test -eq 1 ]; then
   echo "bonusのテスト========================================================================================================================================="
-  make fclean
-  make -n debug_bonus
+  echo "make fclean"
+  make fclean >/dev/null
+  echo "make -n debug_bonus"
+  make -n debug_bonus >/dev/null
   if [ $? -eq 0 ]; then
-    make debug_bonus
+    echo "make debug_bonus"
+    make debug_bonus >/dev/null
   else
-    make bonus
+    echo "make bonus"
+    make bonus >/dev/null
   fi
   if [ $? -ne 0 ]; then
     exit 1
