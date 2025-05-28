@@ -29,23 +29,33 @@ pipex_test() {
     stderr_output=$(./pipex "$@" 2>&1 >/dev/null)
     status=$?
 
+    printf "[execution] ./pipex "
+    for arg in "$@"; do
+      printf '"%s" ' "$arg"
+    done
+    echo ""
+
     if [ "$status" -ne "$expected_status" ]; then
-        echo "exit status: NG🔥"
+        echo "[exit status] NG🔥"
         echo "$status, expected:$expected_status"
     else
-      echo "exit status: OK"
+      echo "[exit status] OK"
     fi
 
-    # if [ "$stderr_output" != "$expected_stderr" ]; then
-    #     echo "NG, $stderr_output, expected:$expected_stderr"
-    # fi
-    # echo "$stderr_output"
+    if [ "$stderr_output" != "$expected_stderr" ]; then
+        echo "[stderr_output] NG🔥"
+        echo "result:\"$stderr_output\", expected:\"$expected_stderr\""
+    else
+      echo "[stderr_output] OK"
+    fi
 
     if [ $leak_test -eq 1 ]; then
       valgrind --leak-check=full --show-leak-kinds=all -q ./pipex "$@"
     else
       ./pipex "$@"
     fi
+
+    echo ""
 }
 
 test_mandatory() {
@@ -73,9 +83,9 @@ test_mandatory() {
   pipex_test 1 "" "infile" "ls" "grep nonexisting" "outfile"
   pipex_test 0 "pipex: /: Is a directory" "infile" "/" "wc -l" "outfile"
   pipex_test 126 "pipex: /: Is a directory" "infile" "ls" "/" "outfile"
-  pipex_test 0 "pipex: .: filename argument required" "infile" "." "wc -l" "outfile"
+  pipex_test 0 "pipex: .: Is a directory" "infile" "." "wc -l" "outfile"
   # 
-  pipex_test 2 "pipex: .: filename argument required" "infile" "ls" "." "outfile"
+  pipex_test 2 "pipex: .: Is a directory" "infile" "ls" "." "outfile"
   pipex_test 0 "" "./lib" "ls" "wc -l" "outfile"
   pipex_test 1 "pipex: ./lib: Is a directory" "infile" "ls" "wc -l" "./lib"
   pipex_test 0 "pipex: /usr/bin/lsxx: No such file or directory" "infile" "/usr/bin/lsxx" "wc -l" "outfile"

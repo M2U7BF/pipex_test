@@ -50,7 +50,7 @@ void	test_get_command_path(char *envp[])
 		result = get_command_path(&cmd_paths[i], path_env);
 		if (result != expected[i])
 		{
-      put_ng();
+			put_ng();
 			printf("result return_value:%d, expected: %d\n", result,
 				expected[i]);
 			printf("\n");
@@ -88,6 +88,12 @@ void	test_access(void)
 		if (result == -1)
 			perror("access");
 		printf("\n");
+		printf("pathname=%s, mode=W_OK\n", in[i]);
+		result = access(in[i], W_OK);
+		printf("result:%d\n", result);
+		if (result == -1)
+			perror("access");
+		printf("\n");
 	}
 	printf("\n");
 }
@@ -110,7 +116,13 @@ void	test_open(void)
 		if (result == -1)
 			perror("open");
 		printf("\n");
-    printf("pathname=\"%s\", flags=(O_WRONLY | O_CREAT | O_TRUNC), mode=0664\n", in[i]);
+		printf("pathname=\"%s\", flags=(O_WRONLY)\n", in[i]);
+		result = open(in[i], O_WRONLY);
+		printf("result:%d\n", result);
+		if (result == -1)
+			perror("open");
+		printf("\n");
+		printf("pathname=\"%s\", flags=(O_WRONLY | O_CREAT | O_TRUNC), mode=0664\n", in[i]);
 		result = open(in[i], O_WRONLY | O_CREAT | O_TRUNC, 0664);
 		printf("result:%d\n", result);
 		if (result == -1)
@@ -129,7 +141,7 @@ void	test_open_infile(void)
 	int		len;
 	int		result;
 
-  put_test_name("open_infile");
+	put_test_name("open_infile");
 	len = sizeof(filenames) / sizeof(filenames[0]);
 	for (int i = 0; i < len; i++)
 	{
@@ -137,7 +149,7 @@ void	test_open_infile(void)
 		result = open_infile(filenames[i], &fds[i]);
 		if (result != expected[i])
 		{
-      put_ng();
+			put_ng();
 			printf("result return_value:%d, expected: %d\n", result,
 				expected[i]);
 			printf("\n");
@@ -158,7 +170,7 @@ void	test_open_outfile(void)
 	int		len;
 	int		result;
 
-  put_test_name("open_outfile");
+	put_test_name("open_outfile");
 	len = sizeof(filenames) / sizeof(filenames[0]);
 	for (int i = 0; i < len; i++)
 	{
@@ -166,7 +178,7 @@ void	test_open_outfile(void)
 		result = open_outfile(filenames[i], &fds[i]);
 		if (result != expected[i])
 		{
-      put_ng();
+			put_ng();
 			printf("result return_value:%d, expected: %d\n", result,
 				expected[i]);
 			printf("\n");
@@ -176,7 +188,35 @@ void	test_open_outfile(void)
 		if (result != 1)
 			close(fds[i]);
 	}
-  unlink("nonexisting");
+	unlink("nonexisting");
+}
+
+void	test_process(char *envp[])
+{
+	char	*command_strs[] = {"cat"};
+	int		in_fds[] = {open("/", O_RDONLY)};
+	int		out_fds[] = {open("outfile", O_WRONLY | O_CREAT | O_TRUNC, 0664)};
+	int		expected[] = {1};
+	int		len;
+	int		result;
+
+	put_test_name("process");
+	len = sizeof(command_strs) / sizeof(command_strs[0]);
+	for (int i = 0; i < len; i++)
+	{
+		printf("TEST %d: command_strs=\"%s\", envp=（略）, in_fd=%d, out_fd=%d\n",
+			i, command_strs[i], in_fds[i], out_fds[i]);
+		result = process(command_strs[i], envp, in_fds[i], out_fds[i]);
+		if (result != expected[i])
+		{
+			put_ng();
+			printf("result return_value:%d, expected: %d\n", result,
+				expected[i]);
+			printf("\n");
+		}
+		else
+			printf("OK\n\n");
+	}
 }
 
 int	main(int argc, char **argv, char *envp[])
@@ -184,10 +224,11 @@ int	main(int argc, char **argv, char *envp[])
 	(void)argc;
 	(void)argv;
 	(void)envp;
-	// test_open();
+	test_open();
 	test_open_infile();
-  test_open_outfile();
-	// test_access();
+	test_open_outfile();
+	test_access();
 	test_get_command_path(envp);
+	test_process(envp);
 	return (0);
 }
