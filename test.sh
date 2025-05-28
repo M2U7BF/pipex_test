@@ -5,7 +5,7 @@ norminette_test=1
 use_func_test=1
 leak_test=1
 func_test=1
-mandatory_test=0
+mandatory_test=1
 bonus_test=0
 
 count=0

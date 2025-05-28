@@ -39,9 +39,9 @@ void	test_get_command_path(char *envp[])
 	char	*cmd_paths[] = {ft_strdup("/bin/ls"), ft_strdup("ls"),
 			ft_strdup(""), ft_strdup("/"), ft_strdup("//"), ft_strdup("//////"),
 			ft_strdup("/bin/nonexisting"), ft_strdup("nonexisting"),
-			ft_strdup("sudo")};
+			ft_strdup("sudo"), ft_strdup("."), ft_strdup("..")};
 	int		expected[] = {0, 0, EXIT_CMD_NOT_FOUND, EISDIR, EISDIR, EISDIR, ENOENT,
-				EXIT_CMD_NOT_FOUND, EACCES};
+				EXIT_CMD_NOT_FOUND, EACCES, EISDIR, EISDIR};
 	int		result;
 	char	**path_env;
 	int		len;
@@ -76,7 +76,7 @@ void	test_get_command_path(char *envp[])
 void	test_access(void)
 {
 	char	*in[] = {"", "/", "//", "//////////////////////////////", " ",
-			"nonexisting", "infile_permission"};
+			"nonexisting", "infile_permission", ".", ".."};
 	int		len;
 	int		result;
 
@@ -106,11 +106,11 @@ void	test_access(void)
 	printf("\n");
 }
 
-// accessの挙動調査
+// openの挙動調査
 void	test_open(void)
 {
 	char	*in[] = {"", "/", "//", "//////////////////////////////", " ",
-			"nonexisting", "infile_permission"};
+			"nonexisting", "infile_permission", ".", ".."};
 	int		len;
 	int		result;
 
@@ -145,9 +145,9 @@ void	test_open(void)
 void	test_open_infile(void)
 {
 	char	*filenames[] = {"", "/", "//", "//////////////////////////////",
-			" ", "nonexisting", "infile_permission"};
-	int		fds[] = {0, 0, 0, 0, 0, 0, 0};
-	int		expected[] = {ENOENT, 0, 0, 0, ENOENT, ENOENT, EACCES};
+			" ", "nonexisting", "infile_permission", ".", ".."};
+	int		fds[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	int		expected[] = {ENOENT, 0, 0, 0, ENOENT, ENOENT, EACCES, EISDIR, EISDIR};
 	int		len;
 	int		result;
 
@@ -177,9 +177,9 @@ void	test_open_infile(void)
 void	test_open_outfile(void)
 {
 	char	*filenames[] = {"", "/", "//", "//////////////////////////////",
-			" ", "nonexisting", "infile_permission"};
-	int		fds[] = {0, 0, 0, 0, 0, 0, 0};
-	int		expected[] = {ENOENT, EISDIR, EISDIR, EISDIR, 0, 0, EACCES};
+			" ", "nonexisting", "infile_permission", ".", ".."};
+	int		fds[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	int		expected[] = {ENOENT, EISDIR, EISDIR, EISDIR, 0, 0, EACCES, 0, 0};
 	int		len;
 	int		result;
 
