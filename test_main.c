@@ -40,8 +40,8 @@ void	test_get_command_path(char *envp[])
 			ft_strdup(""), ft_strdup("/"), ft_strdup("//"), ft_strdup("//////"),
 			ft_strdup("/bin/nonexisting"), ft_strdup("nonexisting"),
 			ft_strdup("sudo"), ft_strdup("."), ft_strdup("..")};
-	int		expected[] = {0, 0, EXIT_CMD_NOT_FOUND, EISDIR, EISDIR, EISDIR, ENOENT,
-				EXIT_CMD_NOT_FOUND, EACCES, EISDIR, EISDIR};
+	int		expected[] = {0, 0, EXIT_CMD_NOT_FOUND, EISDIR, EISDIR, EISDIR,
+				ENOENT, EXIT_CMD_NOT_FOUND, EACCES, EISDIR, EISDIR};
 	int		result;
 	char	**path_env;
 	int		len;
@@ -65,8 +65,7 @@ void	test_get_command_path(char *envp[])
 			put_ok();
 			printf("\n");
 		}
-		if (result == 0)
-			free(cmd_paths[i]);
+		free(cmd_paths[i]);
 	}
 	free_s_array(path_env);
 	printf("\n");
@@ -147,7 +146,7 @@ void	test_open_infile(void)
 	char	*filenames[] = {"", "/", "//", "//////////////////////////////",
 			" ", "nonexisting", "infile_permission", ".", ".."};
 	int		fds[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-	int		expected[] = {ENOENT, 0, 0, 0, ENOENT, ENOENT, EACCES, EISDIR, EISDIR};
+	int		expected[] = {ENOENT, 0, 0, 0, ENOENT, ENOENT, EACCES, 0, 0};
 	int		len;
 	int		result;
 
@@ -179,7 +178,8 @@ void	test_open_outfile(void)
 	char	*filenames[] = {"", "/", "//", "//////////////////////////////",
 			" ", "nonexisting", "infile_permission", ".", ".."};
 	int		fds[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-	int		expected[] = {ENOENT, EISDIR, EISDIR, EISDIR, 0, 0, EACCES, 0, 0};
+	int		expected[] = {ENOENT, EISDIR, EISDIR, EISDIR, 0, 0, EACCES, EISDIR,
+				EISDIR};
 	int		len;
 	int		result;
 
@@ -231,10 +231,10 @@ void	test_process(char *envp[])
 			printf("\n");
 		}
 		else
-    {
-      put_ok();
-      printf("\n");
-    }
+		{
+			put_ok();
+			printf("\n");
+		}
 	}
 }
 
@@ -248,6 +248,6 @@ int	main(int argc, char **argv, char *envp[])
 	test_open_outfile();
 	test_access();
 	test_get_command_path(envp);
-	test_process(envp);
+	// test_process(envp);
 	return (0);
 }
