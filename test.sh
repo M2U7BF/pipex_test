@@ -85,7 +85,7 @@ test_mandatory() {
   pipex_test 126 "pipex: /: Is a directory" "infile" "ls" "/" "outfile"
   pipex_test 0 "pipex: .: Is a directory" "infile" "." "wc -l" "outfile"
   # 
-  pipex_test 2 "pipex: .: Is a directory" "infile" "ls" "." "outfile"
+  pipex_test 126 "pipex: .: Is a directory" "infile" "ls" "." "outfile"
   pipex_test 0 "" "./lib" "ls" "wc -l" "outfile"
   pipex_test 1 "pipex: ./lib: Is a directory" "infile" "ls" "wc -l" "./lib"
   pipex_test 0 "pipex: /usr/bin/lsxx: No such file or directory" "infile" "/usr/bin/lsxx" "wc -l" "outfile"
