@@ -29,6 +29,13 @@ pipex_test() {
     stderr_output=$(./pipex "$@" 2>&1 >/dev/null)
     status=$?
 
+    # テスト用ファイル作成
+    test -e outfile_permission || touch outfile_permission
+    chmod -rw outfile_permission
+    test -e infile_permission || touch infile_permission
+    chmod -rw infile_permission
+    test -e infile || touch infile
+
     printf "[execution] ./pipex "
     for arg in "$@"; do
       printf '"%s" ' "$arg"
