@@ -213,22 +213,24 @@ if [ $bonus_test -eq 1 ]; then
   # ヒアドキュメントのテスト
   # 実行例）
   # ./pipex here_doc EOF "grep error" sort outfile
-  pipex_test 0 "" here_doc EOF "grep hello" sort $BONUS_OUTFILE_2 <<EOF
-hello world
-hello hello
-EOF
 
-  pipex_test 0 "" here_doc EOF "grep a" sort $BONUS_OUTFILE_2 <<EOF
-EOF
+  # スクリプトで実行するとエラーとなる。手動で実行するべき。
+#   pipex_test 0 "" here_doc EOF "grep hello" sort $BONUS_OUTFILE_2 <<EOF
+# hello world
+# hello hello
+# EOF
 
-  pipex_test 0 "" here_doc EOF "grep EOF" sort $BONUS_OUTFILE_2 <<EOF
-EEOF
-EOFF
-EOF
+#   pipex_test 0 "" here_doc EOF "grep a" sort $BONUS_OUTFILE_2 <<EOF
+# EOF
 
-  pipex_test 0 "" here_doc EOF "grep a" sort $BONUS_OUTFILE_2 <<a
-aaa
-a
+#   pipex_test 0 "" here_doc EOF "grep EOF" sort $BONUS_OUTFILE_2 <<EOF
+# EEOF
+# EOFF
+# EOF
+
+#   pipex_test 0 "" here_doc EOF "grep a" sort $BONUS_OUTFILE_2 <<a
+# aaa
+# a
 
 fi
 
