@@ -5,8 +5,10 @@ norminette_test=1
 use_func_test=1
 leak_test=1
 func_test=1
+if [ $(git config user.name) != "M2U7BF" ]; then func_test=0; fi
 mandatory_test=1
-bonus_test=1
+bonus_test=0
+if [ $(cat Makefile | grep bonus | wc -l) -ge 0 ]; then bonus_test=1; fi
 
 count=0
 
